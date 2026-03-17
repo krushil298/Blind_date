@@ -99,137 +99,175 @@ function App() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-pink-600/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="w-full max-w-2xl z-10">
+        {/* Background Decorative Layer */}
+        <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+            <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style={{clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)'}}></div>
+        </div>
+
+      <div className="w-full max-w-5xl z-10">
         
         {/* Header Section */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-10 text-center"
+          className="mb-12 text-center"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-6 shadow-[0_0_15px_rgba(255,255,255,0.05)] text-sm font-medium text-purple-300">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-6 shadow-[0_0_15px_rgba(255,255,255,0.05)] text-sm font-medium text-indigo-300">
              <Sparkles className="w-4 h-4" />
-             Vibecoding Enabled
+             Vibecoding Dashboard
           </div>
-          <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight mb-4">
-            Focus on <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400">Goals</span>
+          <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight mb-4 text-white">
+            Daily <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">Objectives</span>
           </h1>
-          <p className="text-zinc-400 text-lg">Manage your tasks with seamless Supabase synchronization.</p>
+          <p className="text-zinc-400 text-lg max-w-xl mx-auto">Manage your tasks with seamless Supabase synchronization in a beautiful card layout.</p>
         </motion.div>
 
-        {/* Backend Connectivity Badge */}
-        <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-            className="flex items-center justify-between px-5 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl mb-8 shadow-xl"
-        >
-            <span className="text-sm font-medium text-zinc-400">Express Network</span>
-            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold ${backendStatus.includes('smoothly') ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
-               <div className={`w-2 h-2 rounded-full ${backendStatus.includes('smoothly') ? 'bg-emerald-400' : 'bg-red-400'} animate-pulse`} />
-               {backendStatus.includes('smoothly') ? 'Connected' : 'Offline'}
-            </div>
-        </motion.div>
-
-        {/* Input Card */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="bg-zinc-900/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl mb-8"
-        >
-          <form onSubmit={addTodo} className="relative group">
-            <input
-              type="text"
-              value={newTask}
-              onChange={(e) => setNewTask(e.target.value)}
-              placeholder="What needs to be done?"
-              className="w-full bg-zinc-950/50 border border-white/5 text-white text-lg rounded-2xl py-4 pl-6 pr-16 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all placeholder:text-zinc-600 shadow-inner"
-            />
-            <button
-              type="submit"
-              disabled={!newTask.trim()}
-              className="absolute right-2 top-2 bottom-2 aspect-square bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shadow-lg shadow-purple-500/25"
+        {/* Top Bar: Input + Details */}
+        <div className="flex flex-col md:flex-row gap-6 mb-10 w-full">
+            {/* Input Card */}
+            <motion.div 
+            initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}
+            className="flex-1 bg-zinc-900/60 backdrop-blur-3xl border border-white/10 rounded-3xl p-2 shadow-2xl relative overflow-hidden"
             >
-              <Plus className="w-6 h-6" />
-            </button>
-          </form>
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 pointer-events-none"></div>
+                <form onSubmit={addTodo} className="relative z-10 flex gap-2 h-14">
+                    <input
+                    type="text"
+                    value={newTask}
+                    onChange={(e) => setNewTask(e.target.value)}
+                    placeholder="Create a new objective..."
+                    className="flex-1 bg-transparent text-white text-lg px-6 focus:outline-none placeholder:text-zinc-500"
+                    />
+                    <button
+                    type="submit"
+                    disabled={!newTask.trim()}
+                    className="aspect-square h-full bg-white text-zinc-950 rounded-2xl flex items-center justify-center transition-all hover:scale-95 active:scale-90 disabled:opacity-30 disabled:hover:scale-100 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_25px_rgba(255,255,255,0.5)]"
+                    >
+                    <Plus className="w-6 h-6 stroke-[3]" />
+                    </button>
+                </form>
+            </motion.div>
 
-          {/* Progress Bar */}
-          {!loading && todos.length > 0 && (
-            <div className="mt-6">
-              <div className="flex justify-between text-xs font-medium text-zinc-500 mb-2">
-                <span>Task Progress</span>
-                <span>{completedCount} of {todos.length}</span>
-              </div>
-              <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPercent}%` }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
-                />
-              </div>
-            </div>
-          )}
-        </motion.div>
+            {/* Stats Card */}
+            <motion.div 
+                initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}
+                className="w-full md:w-72 bg-zinc-900/60 backdrop-blur-3xl border border-white/10 rounded-3xl p-6 shadow-2xl flex flex-col justify-center"
+            >
+                <div className="flex items-center justify-between mb-3 text-sm">
+                    <span className="text-zinc-400 font-medium">Completion Rate</span>
+                    <span className="text-white font-bold">{completedCount} / {todos.length}</span>
+                </div>
+                <div className="h-2 w-full bg-zinc-800/80 rounded-full overflow-hidden shadow-inner flex-shrink-0">
+                    <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPercent}%` }}
+                    transition={{ duration: 0.8, ease: "circOut" }}
+                    className="h-full bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 rounded-full"
+                    />
+                </div>
+                <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
+                    <span className="text-xs text-zinc-500">API Status</span>
+                    <div className="flex items-center gap-1.5">
+                        <div className={`w-1.5 h-1.5 rounded-full ${backendStatus.includes('smoothly') ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-red-500'} `} />
+                        <span className="text-xs font-semibold text-zinc-300">
+                             {backendStatus.includes('smoothly') ? 'Online' : 'Offline'}
+                        </span>
+                    </div>
+                </div>
+            </motion.div>
+        </div>
 
-        {/* Todo List Area */}
-        <div className="space-y-3">
+        {/* Todo Grid Area */}
+        <div className="w-full">
           {loading ? (
-            <div className="flex justify-center py-12">
-               <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+            <div className="flex flex-col items-center justify-center py-20">
+               <Loader2 className="w-10 h-10 text-indigo-400 animate-spin mb-4 shadow-indigo-500/50" />
+               <p className="text-zinc-500 font-medium animate-pulse">Syncing with Supabase...</p>
             </div>
           ) : todos.length === 0 ? (
             <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-              className="text-center py-16 px-6 bg-zinc-900/20 backdrop-blur-sm border border-white/5 rounded-3xl border-dashed"
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-24 px-6 bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-[2rem] border-dashed"
             >
-              <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/10 shadow-inner">
-                 <Sparkles className="w-8 h-8 text-zinc-500" />
+              <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-white/10 shadow-2xl">
+                 <Sparkles className="w-10 h-10 text-zinc-400" />
               </div>
-              <h3 className="text-xl font-medium text-zinc-300 mb-2">No tasks remaining</h3>
-              <p className="text-zinc-500">Add a task above to kick off your day with a clear mind.</p>
+              <h3 className="text-2xl font-semibold text-white mb-2">The board is clear</h3>
+              <p className="text-zinc-400 max-w-sm mx-auto">Create a new objective above to start structuring your day.</p>
             </motion.div>
           ) : (
-            <AnimatePresence mode="popLayout">
-              {todos.map(todo => (
-                <motion.div
-                  key={todo.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95, x: -20, transition: { duration: 0.2 } }}
-                  transition={{ duration: 0.2 }}
-                  className={`group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border backdrop-blur-xl transition-all ${
-                    todo.is_complete 
-                      ? 'bg-zinc-900/30 border-white/5 opacity-60' 
-                      : 'bg-zinc-900/70 border-white/10 hover:border-white/20 hover:bg-zinc-800/70 shadow-lg'
-                  }`}
-                >
-                  <button 
-                    onClick={() => toggleComplete(todo.id, todo.is_complete)}
-                    className="flex-shrink-0 focus:outline-none group/btn transition-transform hover:scale-110 active:scale-90"
+            <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              <AnimatePresence mode="popLayout">
+                {todos.map(todo => (
+                  <motion.div
+                    key={todo.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)", transition: { duration: 0.2 } }}
+                    transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
+                    className={`group relative flex flex-col justify-between p-6 sm:p-7 rounded-[2rem] border backdrop-blur-2xl transition-all duration-300 min-h-[160px] ${
+                      todo.is_complete 
+                        ? 'bg-zinc-900/40 border-white/5 shadow-none' 
+                        : 'bg-zinc-800/80 border-white/10 hover:border-indigo-500/30 hover:bg-zinc-800 hover:shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:shadow-indigo-500/10 hover:-translate-y-1'
+                    }`}
                   >
-                    {todo.is_complete ? (
-                      <CheckCircle2 className="w-7 h-7 text-purple-400 fill-purple-400/20" />
-                    ) : (
-                      <Circle className="w-7 h-7 text-zinc-500 group-hover/btn:text-purple-400 transition-colors" />
+                    {/* Background glow for active cards */}
+                    {!todo.is_complete && (
+                       <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 via-purple-500/0 to-pink-500/5 opacity-0 group-hover:opacity-100 rounded-[2rem] transition-opacity duration-500 pointer-events-none"></div>
                     )}
-                  </button>
-                  
-                  <span className={`flex-1 text-lg transition-all line-clamp-2 ${
-                    todo.is_complete ? 'text-zinc-500 line-through decoration-zinc-600' : 'text-zinc-200'
-                  }`}>
-                    {todo.task}
-                  </span>
-                  
-                  <button 
-                    onClick={() => deleteTodo(todo.id)}
-                    className="flex-shrink-0 p-2 text-zinc-500 opacity-0 group-hover:opacity-100 focus:opacity-100 hover:text-rose-400 transition-all hover:bg-rose-400/10 rounded-xl"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+
+                    <div className="relative z-10">
+                        <div className="flex items-start justify-between mb-4">
+                            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+                                {new Date(todo.created_at || Date.now()).toLocaleDateString(undefined, { month: 'short', day: 'numeric'})}
+                            </span>
+                            
+                            {/* Actions Group */}
+                            <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
+                                <button 
+                                onClick={() => deleteTodo(todo.id)}
+                                className="p-2 text-zinc-500 hover:text-rose-400 hover:bg-rose-400/10 rounded-xl transition-all"
+                                >
+                                <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <p className={`text-xl font-medium leading-snug transition-all duration-300 ${
+                            todo.is_complete ? 'text-zinc-600 line-through decoration-zinc-700/50' : 'text-zinc-100 group-hover:text-white'
+                        }`}>
+                            {todo.task}
+                        </p>
+                    </div>
+
+                    <div className="relative z-10 flex items-center mt-6">
+                        <button 
+                            onClick={() => toggleComplete(todo.id, todo.is_complete)}
+                            className={`flex items-center gap-3 py-2 px-4 rounded-xl border transition-all duration-300 ${
+                                todo.is_complete
+                                ? 'bg-zinc-800/50 border-white/5 text-zinc-400 hover:bg-zinc-800'
+                                : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-300 hover:bg-indigo-500 hover:text-white hover:border-indigo-400 hover:shadow-[0_0_15px_rgba(99,102,241,0.4)]'
+                            }`}
+                        >
+                            {todo.is_complete ? (
+                                <>
+                                    <CheckCircle2 className="w-4 h-4" />
+                                    <span className="text-xs font-bold uppercase tracking-wider">Completed</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Circle className="w-4 h-4" />
+                                    <span className="text-xs font-bold uppercase tracking-wider">Mark Done</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
           )}
         </div>
 
