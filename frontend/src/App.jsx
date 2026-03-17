@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabaseClient'
+import { motion, AnimatePresence } from 'framer-motion'
+import { CheckCircle2, Circle, Trash2, Plus, Sparkles, Loader2 } from 'lucide-react'
 
 function App() {
   const [todos, setTodos] = useState([])
@@ -53,15 +55,19 @@ function App() {
 
   const toggleComplete = async (id, currentStatus) => {
     try {
+      // Optimistic Update
+      setTodos(todos.map(todo => todo.id === id ? { ...todo, is_complete: !currentStatus } : todo))
+
       const { data, error } = await supabase
         .from('todos')
         .update({ is_complete: !currentStatus })
         .eq('id', id)
         .select()
         
-      if (error) throw error
-      if (data) {
-        setTodos(todos.map(todo => todo.id === id ? data[0] : todo))
+      if (error) {
+        // Revert on error
+         setTodos(todos.map(todo => todo.id === id ? { ...todo, is_complete: currentStatus } : todo))
+         throw error
       }
     } catch (error) {
       console.error('Error updating todo:', error.message)
@@ -82,88 +88,151 @@ function App() {
     }
   }
 
+  // Calculate progress
+  const completedCount = todos.filter(t => t.is_complete).length;
+  const progressPercent = todos.length === 0 ? 0 : Math.round((completedCount / todos.length) * 100);
+
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col items-center py-12 px-4 font-sans text-white">
-      <div className="w-full max-w-2xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-            Vibecoding Todos
+    <div className="min-h-screen bg-[#0A0A0B] text-white flex flex-col items-center py-12 px-4 sm:px-6 relative overflow-hidden font-sans">
+      {/* Dynamic Background Blurs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-pink-600/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[40%] left-[60%] w-[30%] h-[30%] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="w-full max-w-2xl z-10">
+        
+        {/* Header Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-10 text-center"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-6 shadow-[0_0_15px_rgba(255,255,255,0.05)] text-sm font-medium text-purple-300">
+             <Sparkles className="w-4 h-4" />
+             Vibecoding Enabled
+          </div>
+          <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight mb-4">
+            Focus on <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-rose-400">Goals</span>
           </h1>
-          <p className="text-gray-400 text-lg">Test your Supabase integration in real-time.</p>
-        </div>
+          <p className="text-zinc-400 text-lg">Manage your tasks with seamless Supabase synchronization.</p>
+        </motion.div>
 
-        {/* Backend Status indicator */}
-        <div className="bg-gray-900 shadow-2xl rounded-2xl p-4 mb-8 border border-gray-800 flex justify-between items-center">
-            <span className="text-sm font-semibold text-gray-400">Express Backend:</span>
-            <span className={`text-xs font-bold px-3 py-1 rounded-full ${backendStatus.includes('smoothly') ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-              {backendStatus}
-            </span>
-        </div>
+        {/* Backend Connectivity Badge */}
+        <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
+            className="flex items-center justify-between px-5 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl mb-8 shadow-xl"
+        >
+            <span className="text-sm font-medium text-zinc-400">Express Network</span>
+            <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold ${backendStatus.includes('smoothly') ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+               <div className={`w-2 h-2 rounded-full ${backendStatus.includes('smoothly') ? 'bg-emerald-400' : 'bg-red-400'} animate-pulse`} />
+               {backendStatus.includes('smoothly') ? 'Connected' : 'Offline'}
+            </div>
+        </motion.div>
 
-        {/* Todo App Box */}
-        <div className="bg-gray-900 shadow-2xl rounded-2xl p-6 sm:p-8 border border-gray-800">
-          
-          <form onSubmit={addTodo} className="flex gap-3 mb-6">
+        {/* Input Card */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          className="bg-zinc-900/40 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl mb-8"
+        >
+          <form onSubmit={addTodo} className="relative group">
             <input
               type="text"
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
               placeholder="What needs to be done?"
-              className="flex-1 bg-gray-950 border border-gray-700 text-white text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-3 transition-colors"
+              className="w-full bg-zinc-950/50 border border-white/5 text-white text-lg rounded-2xl py-4 pl-6 pr-16 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all placeholder:text-zinc-600 shadow-inner"
             />
             <button
               type="submit"
               disabled={!newTask.trim()}
-              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-lg transition-all disabled:opacity-50 shadow-[0_0_15px_rgba(168,85,247,0.4)]"
+              className="absolute right-2 top-2 bottom-2 aspect-square bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 shadow-lg shadow-purple-500/25"
             >
-              Add
+              <Plus className="w-6 h-6" />
             </button>
           </form>
 
+          {/* Progress Bar */}
+          {!loading && todos.length > 0 && (
+            <div className="mt-6">
+              <div className="flex justify-between text-xs font-medium text-zinc-500 mb-2">
+                <span>Task Progress</span>
+                <span>{completedCount} of {todos.length}</span>
+              </div>
+              <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPercent}%` }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+                />
+              </div>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Todo List Area */}
+        <div className="space-y-3">
           {loading ? (
-            <div className="flex justify-center py-8">
-               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+            <div className="flex justify-center py-12">
+               <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
             </div>
           ) : todos.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 italic">
-              No tasks yet. Add one above to test the database!
-            </div>
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              className="text-center py-16 px-6 bg-zinc-900/20 backdrop-blur-sm border border-white/5 rounded-3xl border-dashed"
+            >
+              <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/10 shadow-inner">
+                 <Sparkles className="w-8 h-8 text-zinc-500" />
+              </div>
+              <h3 className="text-xl font-medium text-zinc-300 mb-2">No tasks remaining</h3>
+              <p className="text-zinc-500">Add a task above to kick off your day with a clear mind.</p>
+            </motion.div>
           ) : (
-            <ul className="space-y-3">
+            <AnimatePresence mode="popLayout">
               {todos.map(todo => (
-                <li 
-                  key={todo.id} 
-                  className={`flex items-center justify-between p-4 rounded-xl border transition-all ${todo.is_complete ? 'bg-gray-950/50 border-green-900/30' : 'bg-gray-800 border-gray-700 hover:border-gray-500'}`}
+                <motion.div
+                  key={todo.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, x: -20, transition: { duration: 0.2 } }}
+                  transition={{ duration: 0.2 }}
+                  className={`group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border backdrop-blur-xl transition-all ${
+                    todo.is_complete 
+                      ? 'bg-zinc-900/30 border-white/5 opacity-60' 
+                      : 'bg-zinc-900/70 border-white/10 hover:border-white/20 hover:bg-zinc-800/70 shadow-lg'
+                  }`}
                 >
-                  <div className="flex items-center gap-4 flex-1">
-                    <button 
-                      onClick={() => toggleComplete(todo.id, todo.is_complete)}
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${todo.is_complete ? 'bg-green-500 border-green-500' : 'border-gray-500 hover:border-purple-400'}`}
-                    >
-                      {todo.is_complete && (
-                        <svg className="w-4 h-4 text-gray-900" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" viewBox="0 0 24 24" stroke="currentColor">
-                          <path d="M5 13l4 4L19 7"></path>
-                        </svg>
-                      )}
-                    </button>
-                    <span className={`text-lg transition-all ${todo.is_complete ? 'text-gray-500 line-through' : 'text-gray-200'}`}>
-                      {todo.task}
-                    </span>
-                  </div>
+                  <button 
+                    onClick={() => toggleComplete(todo.id, todo.is_complete)}
+                    className="flex-shrink-0 focus:outline-none group/btn transition-transform hover:scale-110 active:scale-90"
+                  >
+                    {todo.is_complete ? (
+                      <CheckCircle2 className="w-7 h-7 text-purple-400 fill-purple-400/20" />
+                    ) : (
+                      <Circle className="w-7 h-7 text-zinc-500 group-hover/btn:text-purple-400 transition-colors" />
+                    )}
+                  </button>
+                  
+                  <span className={`flex-1 text-lg transition-all line-clamp-2 ${
+                    todo.is_complete ? 'text-zinc-500 line-through decoration-zinc-600' : 'text-zinc-200'
+                  }`}>
+                    {todo.task}
+                  </span>
+                  
                   <button 
                     onClick={() => deleteTodo(todo.id)}
-                    className="ml-4 text-gray-500 hover:text-red-400 transition-colors p-2"
+                    className="flex-shrink-0 p-2 text-zinc-500 opacity-0 group-hover:opacity-100 focus:opacity-100 hover:text-rose-400 transition-all hover:bg-rose-400/10 rounded-xl"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
+                    <Trash2 className="w-5 h-5" />
                   </button>
-                </li>
+                </motion.div>
               ))}
-            </ul>
+            </AnimatePresence>
           )}
         </div>
+
       </div>
     </div>
   )
