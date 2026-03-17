@@ -16,6 +16,12 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running smoothly! 🚀' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+// Export for Vercel
+export default app;
